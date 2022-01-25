@@ -5,33 +5,15 @@
   width: 50%;
 }
 
-#map-l {
-  left: 0;
-  border-right: 1px solid black;
+.f7 {
+  font-size: 0.8em;
 }
 
-#map-r {
-  left: 50%;
-}
-
-.map-overlay {
-  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  position: absolute;
-  width: 200px;
-  top: 0;
+.right-50 {
   right: 50%;
-  padding: 10px;
 }
    
-.map-overlay .map-overlay-inner {
-  background-color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-   
-.map-overlay-inner fieldset {
+.map-overlay-inner fieldset2 {
   border: none;
   padding: 0;
   margin: 0 0 10px;
