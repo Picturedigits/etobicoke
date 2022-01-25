@@ -12,23 +12,3 @@
 .right-50 {
   right: 50%;
 }
-   
-.map-overlay-inner fieldset2 {
-  border: none;
-  padding: 0;
-  margin: 0 0 10px;
-}
-   
-.map-overlay-inner fieldset:last-child {
-  margin: 0;
-}
-   
-.map-overlay-inner select {
-  width: 100%;
-}
-   
-.map-overlay-inner label {
-  display: block;
-  font-weight: bold;
-  margin: 0 0 5px;
-}

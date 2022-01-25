@@ -25,10 +25,16 @@
       <select id="census-year-dropdown-l" class="w-100 mt1"></select>
     </fieldset>
 
-    <fieldset class="pa0 bn">
+    <fieldset class="pa0 pb2 bn">
       <label class="b">Census variable</label>
       <select id="census-variable-dropdown-l" class="w-100 mt1"></select>
     </fieldset>
+
+    <div class="black-50 dt w-100 mt1">
+      <span id="stats-minmax-l" class="w-40 dtc bg-light-gray br-pill pv1 tc" title="Range of values"></span>
+      <span id="stats-median-l" class="w-30 dtc bg-lightest-blue br-pill pv1 tc" title="Median value"></span>
+      <span id="stats-na-l" class="w-30 dtc bg-washed-red br-pill pv1 tc" title="Census tracts with missing values"></span>
+    </div>
   </div>
 
   <div class="absolute top-0 w5 f7 pa2 br1 bg-white ma2 right-0 o-90">
@@ -37,10 +43,16 @@
       <select id="census-year-dropdown-r" class="w-100 mt1"></select>
     </fieldset>
 
-    <fieldset class="pa0 pb0 bn">
+    <fieldset class="pa0 pb2 bn">
       <label class="b">Census variable</label>
       <select id="census-variable-dropdown-r" class="w-100 mt1"></select>
     </fieldset>
+
+    <div class="black-50 dt w-100 mt1">
+      <span id="stats-minmax-r" class="w-40 dtc bg-light-gray br-pill pv1 tc" title="Range of values"></span>
+      <span id="stats-median-r" class="w-30 dtc bg-lightest-blue br-pill pv1 tc" title="Median value"></span>
+      <span id="stats-na-r" class="w-30 dtc bg-washed-red br-pill pv1 tc" title="Census tracts with missing values"></span>
+    </div>
   </div>
 
   <script src="./metadata.js"></script>

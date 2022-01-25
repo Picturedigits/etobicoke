@@ -78,11 +78,11 @@ syncMaps(mapL, mapR);
         'layout': {
           'visibility': 'none',
           'text-field': '',
-          'text-size': 10,
+          'text-size': 11,
         },
         'paint': {
           'text-color': '#000000',
-          'text-halo-color': 'rgba(255,255,255,0.5)',
+          'text-halo-color': 'rgba(255,255,255,0.8)',
           'text-halo-width': 2
         }
       });
@@ -123,6 +123,17 @@ syncMaps(mapL, mapR);
       const year = yearDropdown.value;
       const variable = varDropdown.value;
 
+      // Update min/max, median, and # NA values
+      document.getElementById('stats-minmax' + mapSuffix).innerHTML = 
+        parseFloat(metadata[year][variable]['min'].toLocaleString())
+        + ' &rarr; ' + parseFloat(metadata[year][variable]['max']).toLocaleString();
+
+      document.getElementById('stats-median' + mapSuffix).innerHTML = 
+        parseFloat(metadata[year][variable]['median']).toLocaleString();
+
+      document.getElementById('stats-na' + mapSuffix).innerHTML = 
+        ' &#8709; ' + metadata[year][variable]['na'];
+
       // Update choropleth
       map.setPaintProperty(
         year,
@@ -159,7 +170,7 @@ syncMaps(mapL, mapR);
           [
             'case',
             ['!=', ['get', variable], null],
-            ['get', variable],
+            ['number-format', ['get', variable], {'locale': 'en-US'}],
             '—'
           ],
           
