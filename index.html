@@ -3,9 +3,10 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Visualize population density</title>
+    <title>Etobicoke Census Maps &mdash; Picturedigits</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
+    <link rel="icon" type="image/png" href="./favicon.png" />
     <script src="https://unpkg.com/maplibre-gl@2.0.1/dist/maplibre-gl.js"></script>
     <link href="https://unpkg.com/maplibre-gl@2.0.1/dist/maplibre-gl.css" rel="stylesheet" />
 
@@ -13,23 +14,33 @@
     <link href="./map.css" rel="stylesheet" />
   </head>
 
-  <body>
+  <body class="helvetica">
 
-  <div id="map-l" class="map"></div>
-  <div id="map-r" class="map"></div>
+  <div id="map-l" class="map left-0 br"></div>
+  <div id="map-r" class="map right-0"></div>
 
-  <div class="map-overlay top">
-    <div class="map-overlay-inner">
-      <fieldset>
-        <label>Census year</label>
-        <select id="census-year-dropdown" name="census-year"></select>
-      </fieldset>
+  <div class="absolute top-0 w5 f7 pa2 br1 bg-white ma2 right-50 o-90">
+    <fieldset class="pa0 pb2 bn">
+      <label class="b">Census year</label>
+      <select id="census-year-dropdown-l" class="w-100 mt1"></select>
+    </fieldset>
 
-      <fieldset>
-        <label>Census variable</label>
-        <select id="census-variable-dropdown" name="census-variable"></select>
-      </fieldset>
-    </div>
+    <fieldset class="pa0 bn">
+      <label class="b">Census variable</label>
+      <select id="census-variable-dropdown-l" class="w-100 mt1"></select>
+    </fieldset>
+  </div>
+
+  <div class="absolute top-0 w5 f7 pa2 br1 bg-white ma2 right-0 o-90">
+    <fieldset class="pa0 pb2 bn">
+      <label class="b">Census year</label>
+      <select id="census-year-dropdown-r" class="w-100 mt1"></select>
+    </fieldset>
+
+    <fieldset class="pa0 pb0 bn">
+      <label class="b">Census variable</label>
+      <select id="census-variable-dropdown-r" class="w-100 mt1"></select>
+    </fieldset>
   </div>
 
   <script src="./metadata.js"></script>
