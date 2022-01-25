@@ -7,8 +7,8 @@ const basemapStyle = 'https://api.maptiler.com/maps/pastel/style.json?key=fXc4kn
 const mapInitCenter = [-79.55, 43.67];
 const mapInitZoom = 10;
 
-// Initialize the map
-var mapL = new maplibregl.Map({
+// Initialize both maps (left and right)
+const mapL = new maplibregl.Map({
   container: 'map-l',
   style: basemapStyle,
   center: mapInitCenter,
@@ -16,8 +16,8 @@ var mapL = new maplibregl.Map({
   attributionControl: false,
 });
 
-// Initialize the map
-var mapR = new maplibregl.Map({
+
+const mapR = new maplibregl.Map({
   container: 'map-r',
   style: basemapStyle,
   center: mapInitCenter,
@@ -26,17 +26,18 @@ var mapR = new maplibregl.Map({
 
 syncMaps(mapL, mapR);
 
+// Both maps show the same data, but use different layer controls
 [mapL, mapR].forEach(function(map) {
 
   map.on('load', function () {
 
+    // Determine which map, left or right, we're working on
     const isLeftMap = map.getContainer().id === 'map-l';
     const mapSuffix = isLeftMap ? '-l' : '-r';
 
+    // Determine the appropriate select elements in DOM
     const yearDropdown = document.getElementById('census-year-dropdown' + mapSuffix);
     const varDropdown = document.getElementById('census-variable-dropdown' + mapSuffix);
-
-    let hoveredTract = null;
       
     // Generate a list of all census years from `metadata.js`
     Object.keys(metadata).forEach(function(year) {
@@ -49,7 +50,8 @@ syncMaps(mapL, mapR);
       // Add source
       map.addSource(year, {
         'type': 'geojson',
-        'data': './geojson/' + year + '.geojson'
+        'data': './geojson/' + year + '.geojson',
+        'attribution': '<a href="https://www.picturedigits.com">Picturedigits</a>'
       });
 
       // Add polygon layer
@@ -87,6 +89,7 @@ syncMaps(mapL, mapR);
 
     });
 
+
     // On census year change, reload polygons
     yearDropdown.addEventListener('change', function() {
 
@@ -113,26 +116,32 @@ syncMaps(mapL, mapR);
       varDropdown.dispatchEvent(new Event('change'));
     });
 
-    // On variable change, update choropleth
+
+    // On variable change, update existing polygons with new color scheme and labels
     varDropdown.addEventListener('change', function() {
 
-      var year = yearDropdown.value;
-      var variable = varDropdown.value;
+      const year = yearDropdown.value;
+      const variable = varDropdown.value;
 
       // Update choropleth
       map.setPaintProperty(
         year,
         'fill-color',
         [
-          'interpolate',
-          ['linear'],
-          ['to-number', ['get', variable]],
-          parseFloat(metadata[year][variable]['min']),
-          ['to-color', '#fcfbfd'],
-          parseFloat(metadata[year][variable]['max']),
-          ['to-color', '#3f007d']
+          'case',
+          ['!=', ['get', variable], null],
+          [
+            'interpolate',
+            ['linear'],
+            ['to-number', ['get', variable]],
+            parseFloat(metadata[year][variable]['min']),
+            ['to-color', '#fcfbfd'],
+            parseFloat(metadata[year][variable]['max']),
+            ['to-color', '#3f007d']
+          ],
+          '#dddddd'
         ]
-      )
+      );
 
       // Update labels
       map.setLayoutProperty(
@@ -147,7 +156,13 @@ syncMaps(mapL, mapR);
           },
           '\n',
           {},
-          ['get', variable],
+          [
+            'case',
+            ['!=', ['get', variable], null],
+            ['get', variable],
+            '—'
+          ],
+          
           {
             'font-scale': 1.1
           }
@@ -156,10 +171,10 @@ syncMaps(mapL, mapR);
 
     });
 
-    // Initialize map with 1951, first variable
+    // Initialize both maps with 1951, first variable
     yearDropdown.dispatchEvent(new Event('change'));
 
-    // Only fit bounds in one map as they're synced
+    // Only fit Etobicoke bounds in one map (they're synced)
     if (isLeftMap) {
       mapL.fitBounds( etobicokeBounds, { padding: 10 } );
     }
