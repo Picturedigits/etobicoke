@@ -125,11 +125,11 @@ syncMaps(mapL, mapR);
 
       // Update min/max, median, and # NA values
       document.getElementById('stats-minmax' + mapSuffix).innerHTML = 
-        parseFloat(metadata[year][variable]['min'].toLocaleString())
+        parseFloat(metadata[year][variable]['min']).toLocaleString()
         + ' &rarr; ' + parseFloat(metadata[year][variable]['max']).toLocaleString();
 
-      document.getElementById('stats-median' + mapSuffix).innerHTML = 
-        parseFloat(metadata[year][variable]['median']).toLocaleString();
+      document.getElementById('stats-median' + mapSuffix).innerHTML = '<i>Q<sub>2</sub></i> '
+        + parseFloat(metadata[year][variable]['median']).toLocaleString();
 
       document.getElementById('stats-na' + mapSuffix).innerHTML = 
         ' &#8709; ' + metadata[year][variable]['na'];
