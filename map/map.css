@@ -1,3 +1,8 @@
+body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
 .map {
   position: absolute;
   top: 0;

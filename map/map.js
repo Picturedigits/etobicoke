@@ -41,8 +41,10 @@ syncMaps(mapL, mapR);
       
     // Generate a list of all census years from `metadata.js`
     Object.keys(metadata).forEach(function(year) {
-      yearDropdown[yearDropdown.options.length] = new Option(year, year)
+      yearDropdown[yearDropdown.options.length] = new Option(year, year);
     });
+
+    const varDropdownNice = NiceSelect.bind(varDropdown, {searchable: true});
 
     // Add individual geojson sources + layers for each census year
     Object.keys(metadata).forEach(function(year) {
@@ -114,6 +116,7 @@ syncMaps(mapL, mapR);
       // By default, showing first variable
       varDropdown.selectedIndex = 0;
       varDropdown.dispatchEvent(new Event('change'));
+      varDropdownNice.update();
     });
 
 
