@@ -29,8 +29,9 @@
 
 .nice-select span.current {
   display: inline-block;
-  max-width: 200px;
+  max-width: 210px;
   overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .nice-select.open,
