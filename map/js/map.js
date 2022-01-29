@@ -3,6 +3,11 @@ const etobicokeBounds = new maplibregl.LngLatBounds(
   [-79.465, 43.765]
 )
 
+const maxBounds = [
+  [-79.8, 43.45],
+  [-79.3, 43.85]
+]
+
 const basemapStyle = 'https://api.maptiler.com/maps/pastel/style.json?key=fXc4knA6xdFWVhZVbmqa';
 const mapInitCenter = [-79.55, 43.67];
 const mapInitZoom = 10;
@@ -14,6 +19,7 @@ const mapL = new maplibregl.Map({
   center: mapInitCenter,
   zoom: mapInitZoom,
   attributionControl: false,
+  maxBounds: maxBounds
 });
 
 
@@ -22,6 +28,7 @@ const mapR = new maplibregl.Map({
   style: basemapStyle,
   center: mapInitCenter,
   zoom: mapInitZoom,
+  maxBounds: maxBounds
 });
 
 syncMaps(mapL, mapR);
@@ -43,8 +50,7 @@ syncMaps(mapL, mapR);
     Object.keys(metadata).forEach(function(year) {
       yearDropdown[yearDropdown.options.length] = new Option(year, year);
     });
-
-    const varDropdownNice = NiceSelect.bind(varDropdown, {searchable: true});
+    NiceSelect.bind(yearDropdown, { placeholder: yearDropdown[0].value} );
 
     // Add individual geojson sources + layers for each census year
     Object.keys(metadata).forEach(function(year) {
@@ -91,6 +97,7 @@ syncMaps(mapL, mapR);
 
     });
 
+    const varDropdownNice = NiceSelect.bind(varDropdown, {searchable: true});
 
     // On census year change, reload polygons
     yearDropdown.addEventListener('change', function() {
@@ -115,6 +122,8 @@ syncMaps(mapL, mapR);
 
       // By default, showing first variable
       varDropdown.selectedIndex = 0;
+      varDropdownNice.placeholder = varDropdown[0].value;
+
       varDropdown.dispatchEvent(new Event('change'));
       varDropdownNice.update();
     });
