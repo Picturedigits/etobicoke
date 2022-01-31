@@ -12,6 +12,12 @@ const basemapStyle = 'https://api.maptiler.com/maps/pastel/style.json?key=fXc4kn
 const mapInitCenter = [-79.55, 43.67];
 const mapInitZoom = 10;
 
+/* Min and max colors for choropleth, from colorbrewer2.org */
+const fillColors = [
+  '#f7fcf5',
+  '#006d2c'
+];
+
 // Initialize both maps (left and right)
 const mapL = new maplibregl.Map({
   container: 'map-l',
@@ -158,9 +164,9 @@ syncMaps(mapL, mapR);
             ['linear'],
             ['to-number', ['get', variable]],
             parseFloat(metadata[year][variable]['min']),
-            ['to-color', '#fcfbfd'],
+            ['to-color', fillColors[0]],
             parseFloat(metadata[year][variable]['max']),
-            ['to-color', '#3f007d']
+            ['to-color', fillColors[1]]
           ],
           '#dddddd'
         ]
