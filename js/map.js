@@ -14,8 +14,8 @@ const mapInitZoom = 10;
 
 /* Min and max colors for choropleth, from colorbrewer2.org */
 const fillColors = [
-  '#f7fcf5',
-  '#006d2c'
+  '#efedf5',
+  '#3f007d'
 ];
 
 // Initialize both maps (left and right)
