@@ -35,6 +35,11 @@
       <select id="census-variable-dropdown-l" class="w-100 mt1 wide small"></select>
     </fieldset>
 
+    <fieldset class="pa0 pb2 bn overlay-dropdown-container">
+      <label class="b">Overlay</label>
+      <select id="overlay-dropdown-l" class="w-100 mt1 small wide"></select>
+    </fieldset>
+
     <div class="black-50 w-100 mt1">
       <span id="stats-minmax-l" class="ph1 bl bw2 b--black-10" title="Range of values"></span>
       <span id="stats-median-l" class="ph1 bl bw2 b--lightest-blue"  title="Median value"></span>
@@ -53,14 +58,21 @@
       <select id="census-variable-dropdown-r" class="w-100 mt1 wide small"></select>
     </fieldset>
 
+    <fieldset class="pa0 pb2 bn overlay-dropdown-container">
+      <label class="b">Overlay</label>
+      <select id="overlay-dropdown-r" class="w-100 mt1 small wide"></select>
+    </fieldset>
+
     <div class="black-50 dt w-100 mt1">
       <span id="stats-minmax-r" class="ph1 bl bw2 b--black-10" title="Range of values"></span>
       <span id="stats-median-r" class="ph1 bl bw2 b--lightest-blue" title="Median value"></span>
       <span id="stats-na-r" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values"></span>
     </div>
+    
   </div>
 
   <script src="./js/metadata.js"></script>
+  <script src="./js/overlays.js"></script>
   <script src="./js/sync.js"></script>
   <script src="./js/map.js"></script>
  
