@@ -51,7 +51,9 @@ syncMaps(mapL, mapR);
     // Determine the appropriate select elements in DOM
     const yearDropdown = document.getElementById('census-year-dropdown' + mapSuffix);
     const varDropdown = document.getElementById('census-variable-dropdown' + mapSuffix);
-      
+    const overlayDropdown = document.getElementById('overlay-dropdown' + mapSuffix);
+    const overlayDropdownNice = NiceSelect.bind(overlayDropdown, {placeholder: 'Off'});
+
     // Generate a list of all census years from `metadata.js`
     Object.keys(metadata).forEach(function(year) {
       yearDropdown[yearDropdown.options.length] = new Option(year, year);
@@ -101,17 +103,77 @@ syncMaps(mapL, mapR);
         }
       });
 
+      // Add overlays if exist
+      if ( overlays[year] && overlays[year].length > 0 ) {
+
+        for (var i in overlays[year]) {
+
+          const overlay = overlays[year][i];
+
+          // Add overlay source
+          map.addSource(overlay.name, {
+            'type': 'geojson',
+            'data': overlay.data
+          });
+
+          // Add overlay boundaries
+          map.addLayer({
+            'id': overlay.name,
+            'type': 'line',
+            'source': overlay.name,
+            'layout': {
+              'visibility': 'none'
+            },
+            'paint': {
+              'line-width': 1,
+              'line-color': 'rgb(0, 0, 0)',
+              'line-opacity': 0.9
+            }
+          });
+
+          // Add overlay labels
+          map.addLayer({
+            'id': overlay.name + '-labels',
+            'type': 'symbol',
+            'source': overlay.name,
+            'minzoom': 9,
+            'layout': {
+              'visibility': 'none',
+              'text-field': ['get', 'name'],
+              'text-size': 9,
+            },
+            'paint': {
+              'text-color': 'rgba(0,0,0,1)',
+              'text-halo-color': 'rgba(255,255,255,0.9)',
+              'text-halo-width': 2,
+              'text-opacity': 1
+            }
+          });
+
+        }
+
+      }
+
     });
 
     const varDropdownNice = NiceSelect.bind(varDropdown, {searchable: true});
 
-    // On census year change, reload polygons
+    // On census year change, reload polygons & overlays
     yearDropdown.addEventListener('change', function() {
 
       // Hide all polygons & layers
       Object.keys(metadata).forEach(function(y) {
         map.setLayoutProperty(y, 'visibility', 'none');
         map.setLayoutProperty(y + '-labels', 'visibility', 'none');
+
+        // Hide overlays
+        if ( overlays[y] ) {
+          overlays[y].forEach(function(overlay) {
+            map.setLayoutProperty(overlay.name, 'visibility', 'none');
+            map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
+          });
+        }
+        
       });
 
       var year = yearDropdown.value;
@@ -121,6 +183,22 @@ syncMaps(mapL, mapR);
       Object.keys(metadata[year]).forEach(function(v) {
         varDropdown[varDropdown.options.length] = new Option(v, v)
       });
+
+      // Update list of overlays for the particular census year
+      overlayDropdown.options.length = 0;
+      if (overlays[year] && overlays[year].length > 0 ) {
+        overlayDropdown.parentNode.style.display = 'block';
+
+        overlayDropdown[0] = new Option('Off', '');
+        Object.keys(overlays[year]).forEach(function(i) {
+          let o = overlays[year][i];
+          let l = overlayDropdown.options.length;
+          overlayDropdown[l] = new Option(o.displayName, o.name);
+        });
+        overlayDropdownNice.update();
+      } else {
+        overlayDropdown.parentNode.style.display = 'none';
+      }
 
       // Show choropleth & labels for the year
       map.setLayoutProperty(year, 'visibility', 'visible');
@@ -133,6 +211,29 @@ syncMaps(mapL, mapR);
       varDropdown.dispatchEvent(new Event('change'));
       varDropdownNice.update();
     });
+
+
+    // On overlay change, add/remove boundaries
+    overlayDropdown.addEventListener('change', function() {
+
+      const overlayName = overlayDropdown.value;
+      const year = yearDropdown.value;
+
+      // Hide existing overlays from selected year
+      if (overlays[year] && overlays[year].length > 0) {
+        overlays[year].forEach(function(overlay) {
+          map.setLayoutProperty(overlay.name, 'visibility', 'none');
+          map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
+        })
+      }
+
+      // Add new overlay
+      if (overlayName !== '') {
+        map.setLayoutProperty(overlayName, 'visibility', 'visible');
+        map.setLayoutProperty(overlayName + '-labels', 'visibility', 'visible');
+      }
+
+    })
 
 
     // On variable change, update existing polygons with new color scheme and labels
