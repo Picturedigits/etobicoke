@@ -127,7 +127,7 @@ syncMaps(mapL, mapR);
             'paint': {
               'line-width': 2,
               'line-color': 'rgb(0, 0, 0)',
-              'line-opacity': 0.6
+              'line-opacity': 0.9
             }
           });
 
