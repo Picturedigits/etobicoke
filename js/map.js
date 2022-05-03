@@ -125,9 +125,9 @@ syncMaps(mapL, mapR);
               'visibility': 'none'
             },
             'paint': {
-              'line-width': 1,
+              'line-width': 2,
               'line-color': 'rgb(0, 0, 0)',
-              'line-opacity': 0.9
+              'line-opacity': 0.6
             }
           });
 
@@ -181,8 +181,9 @@ syncMaps(mapL, mapR);
       // Update list of variables for the particular census year
       varDropdown.options.length = 0;
       Object.keys(metadata[year]).forEach(function(v) {
-        varDropdown[varDropdown.options.length] = new Option(v, v)
+        varDropdown[varDropdown.options.length] = new Option(v, v);
       });
+      varDropdown[varDropdown.options.length] = new Option('Off', '');
 
       // Update list of overlays for the particular census year
       overlayDropdown.options.length = 0;
@@ -242,22 +243,27 @@ syncMaps(mapL, mapR);
       const year = yearDropdown.value;
       const variable = varDropdown.value;
 
-      // Update min/max, median, and # NA values
-      document.getElementById('stats-minmax' + mapSuffix).innerHTML = 
-        parseFloat(metadata[year][variable]['min']).toLocaleString()
-        + ' &rarr; ' + parseFloat(metadata[year][variable]['max']).toLocaleString();
+      if ( variable !== '' ) {
 
-      document.getElementById('stats-median' + mapSuffix).innerHTML = '<i>Q<sub>2</sub></i> '
-        + parseFloat(metadata[year][variable]['median']).toLocaleString();
+        // Update min/max, median, and # NA values
+        document.getElementById('stats-minmax' + mapSuffix).innerHTML = 
+          parseFloat(metadata[year][variable]['min']).toLocaleString()
+          + ' &rarr; ' + parseFloat(metadata[year][variable]['max']).toLocaleString();
 
-      document.getElementById('stats-na' + mapSuffix).innerHTML = 
-        ' &#8709; ' + metadata[year][variable]['na'];
+        document.getElementById('stats-median' + mapSuffix).innerHTML = '<i>Q<sub>2</sub></i> '
+          + parseFloat(metadata[year][variable]['median']).toLocaleString();
+
+        document.getElementById('stats-na' + mapSuffix).innerHTML = 
+          ' &#8709; ' + metadata[year][variable]['na'];
+
+      }
+
 
       // Update choropleth
       map.setPaintProperty(
         year,
         'fill-color',
-        [
+        variable === '' ? 'rgba(0,0,0,0.3)' : [
           'case',
           ['!=', ['get', variable], null],
           [
@@ -272,6 +278,7 @@ syncMaps(mapL, mapR);
           '#dddddd'
         ]
       );
+
 
       // Update labels
       map.setLayoutProperty(
@@ -290,7 +297,7 @@ syncMaps(mapL, mapR);
             'case',
             ['!=', ['get', variable], null],
             ['number-format', ['get', variable], {'locale': 'en-US'}],
-            '—'
+            variable === '' ? '' : '—'
           ],
           
           {
