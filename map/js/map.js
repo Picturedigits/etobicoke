@@ -3,10 +3,7 @@ const etobicokeBounds = new maplibregl.LngLatBounds(
   [-79.465, 43.765]
 )
 
-const maxBounds = [
-  [-79.8, 43.45],
-  [-79.3, 43.85]
-]
+const maxBounds = [ [-81.0, 42.45], [-78.0, 44.85 ]];
 
 const basemapStyle = 'https://api.maptiler.com/maps/pastel/style.json?key=fXc4knA6xdFWVhZVbmqa';
 const mapInitCenter = [-79.55, 43.67];
@@ -52,6 +49,7 @@ syncMaps(mapL, mapR);
     const yearDropdown = document.getElementById('census-year-dropdown' + mapSuffix);
     const varDropdown = document.getElementById('census-variable-dropdown' + mapSuffix);
     const overlayDropdown = document.getElementById('overlay-dropdown' + mapSuffix);
+    const showMetroCheckbox = document.getElementById('show-metro' + mapSuffix);
     const overlayDropdownNice = NiceSelect.bind(overlayDropdown, {placeholder: 'Off'});
 
     // Generate a list of all census years from `metadata.js`
@@ -176,6 +174,9 @@ syncMaps(mapL, mapR);
         
       });
 
+      // Hide metro stats
+      document.getElementById('metro-stats-wrapper' + mapSuffix).classList.add('dn');
+
       var year = yearDropdown.value;
 
       // Update list of variables for the particular census year
@@ -200,6 +201,11 @@ syncMaps(mapL, mapR);
       } else {
         overlayDropdown.parentNode.style.display = 'none';
       }
+
+      // Hide metro by default
+      map.setFilter(year, ['==', 'is_metro', false]);
+      map.setFilter(year + '-labels', ['==', 'is_metro', false]);
+      showMetroCheckbox.checked = false;
 
       // Show choropleth & labels for the year
       map.setLayoutProperty(year, 'visibility', 'visible');
@@ -245,16 +251,39 @@ syncMaps(mapL, mapR);
 
       if ( variable !== '' ) {
 
-        // Update min/max, median, and # NA values
+        // Etobicoke
+        let min = parseFloat(metadata[year][variable]['min'])
+        let max = parseFloat(metadata[year][variable]['max'])
+        let med = parseFloat(metadata[year][variable]['median'])
+        let na = parseFloat(metadata[year][variable]['na'])
+
+        // Update min/max, median, and # NA values - Etobicoke
         document.getElementById('stats-minmax' + mapSuffix).innerHTML = 
-          parseFloat(metadata[year][variable]['min']).toLocaleString()
-          + ' &rarr; ' + parseFloat(metadata[year][variable]['max']).toLocaleString();
+          (min === min ? min : '-').toLocaleString()
+            + ' &rarr; ' + (max === max ? max : '-').toLocaleString();
 
         document.getElementById('stats-median' + mapSuffix).innerHTML = '<i>Q<sub>2</sub></i> '
-          + parseFloat(metadata[year][variable]['median']).toLocaleString();
+          + (med === med ? med : '-').toLocaleString();
 
         document.getElementById('stats-na' + mapSuffix).innerHTML = 
-          ' &#8709; ' + metadata[year][variable]['na'];
+          ' &#8709; ' + (na === na ? na : '-' );
+
+        // Metro
+        let min_ = parseFloat(metadata[year][variable]['min_metro'])
+        let max_ = parseFloat(metadata[year][variable]['max_metro'])
+        let med_ = parseFloat(metadata[year][variable]['median_metro'])
+        let na_ = parseFloat(metadata[year][variable]['na_metro'])
+
+        // Update min/max, median, and # NA values - metro
+        document.getElementById('stats-metro-minmax' + mapSuffix).innerHTML = 
+          (min_ === min_ ? min_ : '-').toLocaleString()
+            + ' &rarr; ' + (max_ === max_ ? max_ : '-').toLocaleString();
+
+        document.getElementById('stats-metro-median' + mapSuffix).innerHTML = '<i>Q<sub>2</sub></i> '
+          + (med_ === med_ ? med_ : '-').toLocaleString();
+
+        document.getElementById('stats-metro-na' + mapSuffix).innerHTML = 
+          ' &#8709; ' + (na_ === na_ ? na_ : '-' );
 
       }
 
@@ -270,15 +299,14 @@ syncMaps(mapL, mapR);
             'interpolate',
             ['linear'],
             ['to-number', ['get', variable]],
-            parseFloat(metadata[year][variable]['min']),
+            parseFloat(metadata[year][variable]['min_choro']),
             ['to-color', fillColors[0]],
-            parseFloat(metadata[year][variable]['max']),
+            parseFloat(metadata[year][variable]['max_choro']),
             ['to-color', fillColors[1]]
           ],
           '#dddddd'
         ]
       );
-
 
       // Update labels
       map.setLayoutProperty(
@@ -307,6 +335,27 @@ syncMaps(mapL, mapR);
       )
 
     });
+
+    // Toggle metro visibility
+    showMetroCheckbox.addEventListener('change', function(e) {
+
+      let year = yearDropdown.value;
+
+      if (!e.target.checked) {
+        map.setFilter(year, ['==', 'is_metro', e.target.checked]);
+        map.setFilter(year + '-labels', ['==', 'is_metro', e.target.checked]);
+
+        document.getElementById('metro-stats-wrapper' + mapSuffix).classList.add('dn');
+      }
+      else {
+        map.setFilter(year, null);
+        map.setFilter(year + '-labels', null);
+
+        document.getElementById('metro-stats-wrapper' + mapSuffix).classList.remove('dn');
+      }
+
+    });
+
 
     // Initialize both maps with 1951, first variable
     yearDropdown.dispatchEvent(new Event('change'));

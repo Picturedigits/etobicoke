@@ -40,10 +40,23 @@
       <select id="overlay-dropdown-l" class="w-100 mt1 small wide"></select>
     </fieldset>
 
+    <fieldset class="pb2 ph0 bn cf">
+      <input type="checkbox" id="show-metro-l">
+      <label class="small" for="show-metro-l">Show metro</label>
+    </fieldset>
+
     <div class="black-50 w-100 mt1">
-      <span id="stats-minmax-l" class="ph1 bl bw2 b--black-10" title="Range of values"></span>
-      <span id="stats-median-l" class="ph1 bl bw2 b--lightest-blue"  title="Median value"></span>
-      <span id="stats-na-l" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values"></span>
+      Eto
+      <span id="stats-minmax-l" class="ph1 bl bw2 b--black-10" title="Range of values - Etobicoke"></span>
+      <span id="stats-median-l" class="ph1 bl bw2 b--lightest-blue"  title="Median value - Etobicoke"></span>
+      <span id="stats-na-l" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values - Etobicoke"></span>
+    </div>
+
+    <div class="black-50 w-100 mt1 dn" id="metro-stats-wrapper-l">
+      Met 
+      <span id="stats-metro-minmax-l" class="ph1 bl bw2 b--black-10" title="Range of values - metro"></span>
+      <span id="stats-metro-median-l" class="ph1 bl bw2 b--lightest-blue"  title="Median value - metro"></span>
+      <span id="stats-metro-na-l" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values - metro"></span>
     </div>
   </div>
 
@@ -58,15 +71,28 @@
       <select id="census-variable-dropdown-r" class="w-100 mt1 wide small"></select>
     </fieldset>
 
-    <fieldset class="pa0 pb2 bn overlay-dropdown-container">
+    <fieldset class="pa0 bn overlay-dropdown-container">
       <label class="b">Overlay</label>
       <select id="overlay-dropdown-r" class="w-100 mt1 small wide"></select>
     </fieldset>
 
-    <div class="black-50 dt w-100 mt1">
-      <span id="stats-minmax-r" class="ph1 bl bw2 b--black-10" title="Range of values"></span>
-      <span id="stats-median-r" class="ph1 bl bw2 b--lightest-blue" title="Median value"></span>
-      <span id="stats-na-r" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values"></span>
+    <fieldset class="pb2 ph0 bn cf">
+      <input type="checkbox" id="show-metro-r">
+      <label class="small" for="show-metro-r">Show metro</label>
+    </fieldset>
+
+    <div class="black-50 w-100 mt1 cf">
+      Eto
+      <span id="stats-minmax-r" class="ph1 bl bw2 b--black-10" title="Range of values - Etobicoke"></span>
+      <span id="stats-median-r" class="ph1 bl bw2 b--lightest-blue" title="Median value - Etobicoke"></span>
+      <span id="stats-na-r" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values - Etobicoke"></span>
+    </div>
+
+    <div class="black-50 w-100 mt1 cf dn" id="metro-stats-wrapper-r">
+      Met 
+      <span id="stats-metro-minmax-r" class="ph1 bl bw2 b--black-10" title="Range of values - metro"></span>
+      <span id="stats-metro-median-r" class="ph1 bl bw2 b--lightest-blue" title="Median value - metro"></span>
+      <span id="stats-metro-na-r" class="ph1 bl bw2 b--washed-red" title="Census tracts with missing values - metro"></span>
     </div>
     
   </div>
