@@ -17,3 +17,13 @@ body {
 .right-50 {
   right: 50%;
 }
+
+.overlay-legend {
+  margin-top: 5px;
+  padding: 5px 8px;
+  font-size: 0.9em;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: linear-gradient(160deg, rgba(255,255,255,0.92), rgba(240,240,245,0.80));
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.95);
+}

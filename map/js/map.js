@@ -114,39 +114,111 @@ syncMaps(mapL, mapR);
             'data': overlay.data
           });
 
-          // Add overlay boundaries
-          map.addLayer({
-            'id': overlay.name,
-            'type': 'line',
-            'source': overlay.name,
-            'layout': {
-              'visibility': 'none'
-            },
-            'paint': {
-              'line-width': 2,
-              'line-color': 'rgb(0, 0, 0)',
-              'line-opacity': 0.9
-            }
-          });
+          if (overlay.type === 'point') {
 
-          // Add overlay labels
-          map.addLayer({
-            'id': overlay.name + '-labels',
-            'type': 'symbol',
-            'source': overlay.name,
-            'minzoom': 9,
-            'layout': {
-              'visibility': 'none',
-              'text-field': ['get', 'name'],
-              'text-size': 9,
-            },
-            'paint': {
-              'text-color': 'rgba(0,0,0,1)',
-              'text-halo-color': 'rgba(255,255,255,0.9)',
-              'text-halo-width': 2,
-              'text-opacity': 1
-            }
-          });
+            // Load category icons then add symbol layer
+            fetch(overlay.data)
+              .then(function(r) { return r.json(); })
+              .then(function(geojson) {
+                const categories = [...new Set(
+                  geojson.features.map(function(f) { return f.properties.category; }).filter(Boolean)
+                )];
+                return Promise.all(categories.map(function(cat) {
+                  return new Promise(function(resolve) {
+                    map.loadImage('./img/' + cat + '.png', function(err, image) {
+                      if (!err && image && !map.hasImage(cat)) map.addImage(cat, image);
+                      resolve();
+                    });
+                  });
+                }));
+              })
+              .then(function() {
+                map.addLayer({
+                  'id': overlay.name,
+                  'type': 'symbol',
+                  'source': overlay.name,
+                  'layout': {
+                    'visibility': 'none',
+                    'icon-image': ['get', 'category'],
+                    'icon-size': 0.1875,
+                    'icon-allow-overlap': true,
+                    'text-field': ['get', 'name'],
+                    'text-size': 9,
+                    'text-offset': [0, 1.5],
+                    'text-anchor': 'top',
+                    'text-optional': true,
+                  },
+                  'paint': {
+                    'text-color': 'rgba(0,0,0,1)',
+                    'text-halo-color': 'rgba(255,255,255,0.9)',
+                    'text-halo-width': 2,
+                    'text-opacity': 1
+                  }
+                });
+
+                // Dummy labels layer so visibility toggling works without changes elsewhere
+                map.addLayer({
+                  'id': overlay.name + '-labels',
+                  'type': 'symbol',
+                  'source': overlay.name,
+                  'layout': { 'visibility': 'none' }
+                });
+
+                const tooltip = new maplibregl.Popup({ closeButton: false, closeOnClick: false });
+
+                map.on('mouseenter', overlay.name, function(e) {
+                  map.getCanvas().style.cursor = 'pointer';
+                  const props = e.features[0].properties;
+                  const html = '<b>' + props.name + '</b>'
+                    + (props.text ? '<br>' + props.text : '');
+                  tooltip.setLngLat(e.features[0].geometry.coordinates)
+                    .setHTML(html)
+                    .addTo(map);
+                });
+
+                map.on('mouseleave', overlay.name, function() {
+                  map.getCanvas().style.cursor = '';
+                  tooltip.remove();
+                });
+              });
+
+          } else {
+
+            // Add overlay boundaries
+            map.addLayer({
+              'id': overlay.name,
+              'type': 'line',
+              'source': overlay.name,
+              'layout': {
+                'visibility': 'none'
+              },
+              'paint': {
+                'line-width': 2,
+                'line-color': 'rgb(0, 0, 0)',
+                'line-opacity': 0.9
+              }
+            });
+
+            // Add overlay labels
+            map.addLayer({
+              'id': overlay.name + '-labels',
+              'type': 'symbol',
+              'source': overlay.name,
+              'minzoom': 9,
+              'layout': {
+                'visibility': 'none',
+                'text-field': ['get', 'name'],
+                'text-size': 9,
+              },
+              'paint': {
+                'text-color': 'rgba(0,0,0,1)',
+                'text-halo-color': 'rgba(255,255,255,0.9)',
+                'text-halo-width': 2,
+                'text-opacity': 1
+              }
+            });
+
+          }
 
         }
 
@@ -225,6 +297,7 @@ syncMaps(mapL, mapR);
 
       const overlayName = overlayDropdown.value;
       const year = yearDropdown.value;
+      const legend = document.getElementById('overlay-legend' + mapSuffix);
 
       // Hide existing overlays from selected year
       if (overlays[year] && overlays[year].length > 0) {
@@ -238,6 +311,29 @@ syncMaps(mapL, mapR);
       if (overlayName !== '') {
         map.setLayoutProperty(overlayName, 'visibility', 'visible');
         map.setLayoutProperty(overlayName + '-labels', 'visibility', 'visible');
+      }
+
+      // Update legend
+      const overlayConfig = overlays[year] && overlays[year].find(function(o) { return o.name === overlayName; });
+      if (overlayConfig && overlayConfig.type === 'point') {
+        fetch(overlayConfig.data)
+          .then(function(r) { return r.json(); })
+          .then(function(geojson) {
+            const categories = [...new Set(
+              geojson.features.map(function(f) { return f.properties.category; }).filter(Boolean)
+            )].sort();
+            legend.innerHTML = categories.map(function(cat) {
+              const label = cat.replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+              return '<div class="flex items-center mb1">'
+                + '<img src="./img/' + cat + '.png" style="width:18px;height:18px;flex-shrink:0;margin-right:6px;">'
+                + '<span>' + label + '</span>'
+                + '</div>';
+            }).join('');
+            legend.classList.remove('dn');
+          });
+      } else {
+        legend.innerHTML = '';
+        legend.classList.add('dn');
       }
 
     })
