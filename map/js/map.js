@@ -58,6 +58,10 @@ syncMaps(mapL, mapR);
     });
     NiceSelect.bind(yearDropdown, { placeholder: yearDropdown[0].value} );
 
+    // Track which overlay sources/layers have been registered to avoid duplicates
+    // across years that share the same overlay (async fetches make map.getLayer unreliable)
+    const registeredOverlays = new Set();
+
     // Add individual geojson sources + layers for each census year
     Object.keys(metadata).forEach(function(year) {
       
@@ -107,6 +111,9 @@ syncMaps(mapL, mapR);
         for (var i in overlays[year]) {
 
           const overlay = overlays[year][i];
+
+          if (registeredOverlays.has(overlay.name)) continue;
+          registeredOverlays.add(overlay.name);
 
           // Add overlay source
           map.addSource(overlay.name, {
@@ -239,11 +246,11 @@ syncMaps(mapL, mapR);
         // Hide overlays
         if ( overlays[y] ) {
           overlays[y].forEach(function(overlay) {
-            map.setLayoutProperty(overlay.name, 'visibility', 'none');
-            map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
+            if (map.getLayer(overlay.name)) map.setLayoutProperty(overlay.name, 'visibility', 'none');
+            if (map.getLayer(overlay.name + '-labels')) map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
           });
         }
-        
+
       });
 
       // Hide metro stats
@@ -258,21 +265,27 @@ syncMaps(mapL, mapR);
       });
       varDropdown[varDropdown.options.length] = new Option('Off', '');
 
-      // Update list of overlays for the particular census year
+      // Update list of overlays for the particular census year, reset to Off
       overlayDropdown.options.length = 0;
-      if (overlays[year] && overlays[year].length > 0 ) {
+      const newYearOverlays = overlays[year] || [];
+      if (newYearOverlays.length > 0) {
         overlayDropdown.parentNode.style.display = 'block';
-
         overlayDropdown[0] = new Option('Off', '');
-        Object.keys(overlays[year]).forEach(function(i) {
-          let o = overlays[year][i];
+        Object.keys(newYearOverlays).forEach(function(i) {
+          let o = newYearOverlays[i];
           let l = overlayDropdown.options.length;
           overlayDropdown[l] = new Option(o.displayName, o.name);
         });
-        overlayDropdownNice.update();
       } else {
         overlayDropdown.parentNode.style.display = 'none';
       }
+      overlayDropdown.selectedIndex = 0;
+      overlayDropdownNice.update();
+
+      // Hide point legend
+      const legend = document.getElementById('overlay-legend' + mapSuffix);
+      legend.innerHTML = '';
+      legend.classList.add('dn');
 
       // Hide metro by default
       map.setFilter(year, ['==', 'is_metro', false]);
@@ -302,15 +315,15 @@ syncMaps(mapL, mapR);
       // Hide existing overlays from selected year
       if (overlays[year] && overlays[year].length > 0) {
         overlays[year].forEach(function(overlay) {
-          map.setLayoutProperty(overlay.name, 'visibility', 'none');
-          map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
+          if (map.getLayer(overlay.name)) map.setLayoutProperty(overlay.name, 'visibility', 'none');
+          if (map.getLayer(overlay.name + '-labels')) map.setLayoutProperty(overlay.name + '-labels', 'visibility', 'none');
         })
       }
 
       // Add new overlay
       if (overlayName !== '') {
-        map.setLayoutProperty(overlayName, 'visibility', 'visible');
-        map.setLayoutProperty(overlayName + '-labels', 'visibility', 'visible');
+        if (map.getLayer(overlayName)) map.setLayoutProperty(overlayName, 'visibility', 'visible');
+        if (map.getLayer(overlayName + '-labels')) map.setLayoutProperty(overlayName + '-labels', 'visibility', 'visible');
       }
 
       // Update legend
